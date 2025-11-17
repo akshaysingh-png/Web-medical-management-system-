@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}{{ 'Edit Patient' if patient else 'Add Patient' }} - Medical Management System{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">{{ 'Edit Patient' if patient else 'Add New Patient' }}</h2>
+
+<div class="card">
+    <div class="card-body">
+        <form method="POST">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="first_name" class="form-label">First Name *</label>
+                    <input type="text" class="form-control" id="first_name" name="first_name" value="{{ patient['first_name'] if patient else '' }}" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="last_name" class="form-label">Last Name *</label>
+                    <input type="text" class="form-control" id="last_name" name="last_name" value="{{ patient['last_name'] if patient else '' }}" required>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="dob" class="form-label">Date of Birth</label>
+                    <input type="date" class="form-control" id="dob" name="dob" value="{{ patient['dob'] if patient and patient['dob'] else '' }}">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="gender" class="form-label">Gender</label>
+                    <select class="form-select" id="gender" name="gender">
+                        <option value="">Select...</option>
+                        <option value="Male" {% if patient and patient['gender'] == 'Male' %}selected{% endif %}>Male</option>
+                        <option value="Female" {% if patient and patient['gender'] == 'Female' %}selected{% endif %}>Female</option>
+                        <option value="Other" {% if patient and patient['gender'] == 'Other' %}selected{% endif %}>Other</option>
+                    </select>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="contact" class="form-label">Contact</label>
+                <input type="text" class="form-control" id="contact" name="contact" value="{{ patient['contact'] if patient and patient['contact'] else '' }}" placeholder="Phone or Email">
+            </div>
+            <button type="submit" class="btn btn-primary">{{ 'Update Patient' if patient else 'Add Patient' }}</button>
+            <a href="{{ url_for('patient_view', id=patient['id']) if patient else url_for('patient_list') }}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+

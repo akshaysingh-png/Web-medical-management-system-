@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Patient Details - Medical Management System{% endblock %}
+
+{% block content %}
+<div class="alert alert-success" role="alert">
+    <strong>Feature Demonstration:</strong> This page shows complete patient information including appointment history and diagnostic records. 
+    Use the "Export PDF" button to generate a comprehensive patient report.
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Patient Details</h2>
+    <div>
+        <a href="{{ url_for('patient_edit', id=patient['id']) }}" class="btn btn-warning">Edit Patient</a>
+        <a href="{{ url_for('diagnostics', patient_id=patient['id']) }}" class="btn btn-primary">Add Diagnostics</a>
+        <a href="{{ url_for('export_patient', id=patient['id']) }}" class="btn btn-success">Export PDF</a>
+        <a href="{{ url_for('patient_list') }}" class="btn btn-secondary">Back to List</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Patient Information</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr>
+                        <th width="40%">ID:</th>
+                        <td>{{ patient['id'] }}</td>
+                    </tr>
+                    <tr>
+                        <th>Name:</th>
+                        <td>{{ patient['first_name'] }} {{ patient['last_name'] }}</td>
+                    </tr>
+                    <tr>
+                        <th>Date of Birth:</th>
+                        <td>{{ patient['dob'] or '-' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Gender:</th>
+                        <td>{{ patient['gender'] or '-' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Contact:</th>
+                        <td>{{ patient['contact'] or '-' }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <a href="{{ url_for('appointment_new') }}?patient_id={{ patient['id'] }}" class="btn btn-primary w-100 mb-2">Schedule Appointment</a>
+                <a href="{{ url_for('diagnostics', patient_id=patient['id']) }}" class="btn btn-info w-100 mb-2">Add Diagnostic Record</a>
+                <a href="{{ url_for('export_patient', id=patient['id']) }}" class="btn btn-success w-100">Export PDF Report</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">Appointments</h5>
+            </div>
+            <div class="card-body">
+                {% if appointments %}
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Date/Time</th>
+                                <th>Reason</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for apt in appointments %}
+                            <tr>
+                                <td>{{ apt['appt_datetime'] }}</td>
+                                <td>{{ apt['reason'] or '-' }}</td>
+                                <td><span class="badge bg-{{ 'success' if apt['status'] == 'completed' else 'warning' }}">{{ apt['status'] }}</span></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted">No appointments recorded.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-warning text-white">
+                <h5 class="mb-0">Diagnostics</h5>
+            </div>
+            <div class="card-body">
+                {% if diagnostics %}
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Date/Time</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for diag in diagnostics %}
+                            <tr>
+                                <td>{{ diag['diag_datetime'] }}</td>
+                                <td>{{ diag['notes'][:50] }}{% if diag['notes']|length > 50 %}...{% endif %}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted">No diagnostics recorded.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+

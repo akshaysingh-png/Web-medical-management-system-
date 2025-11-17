@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Appointments - Medical Management System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Appointments</h2>
+    <a href="{{ url_for('appointment_new') }}" class="btn btn-primary">Schedule New Appointment</a>
+</div>
+
+<div class="alert alert-light border" role="alert">
+    <strong>Instructions for Evaluators:</strong> This page shows all scheduled appointments. You can schedule new appointments, 
+    mark appointments as completed, or view appointment details. Appointments are linked to patient records.
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Patient</th>
+                    <th>Date/Time</th>
+                    <th>Reason</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appointment in appointments %}
+                <tr>
+                    <td>{{ appointment['id'] }}</td>
+                    <td>
+                        {% if appointment['first_name'] %}
+                        <a href="{{ url_for('patient_view', id=appointment['patient_id']) }}">
+                            {{ appointment['first_name'] }} {{ appointment['last_name'] }}
+                        </a>
+                        {% else %}
+                        Patient ID: {{ appointment['patient_id'] }}
+                        {% endif %}
+                    </td>
+                    <td>{{ appointment['appt_datetime'] }}</td>
+                    <td>{{ appointment['reason'] or '-' }}</td>
+                    <td>
+                        <span class="badge bg-{{ 'success' if appointment['status'] == 'completed' else 'warning' if appointment['status'] == 'scheduled' else 'secondary' }}">
+                            {{ appointment['status'] }}
+                        </span>
+                    </td>
+                    <td>
+                        <a href="{{ url_for('appointment_edit', id=appointment['id']) }}" class="btn btn-sm btn-warning">Edit</a>
+                        {% if appointment['status'] != 'completed' %}
+                        <form method="POST" action="{{ url_for('appointment_complete', id=appointment['id']) }}" style="display:inline;">
+                            <button type="submit" class="btn btn-sm btn-success">Mark Complete</button>
+                        </form>
+                        {% endif %}
+                        <form method="POST" action="{{ url_for('appointment_delete', id=appointment['id']) }}" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this appointment?');">
+                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="text-center">No appointments found. <a href="{{ url_for('appointment_new') }}">Schedule your first appointment</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+

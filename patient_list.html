@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Patients - Medical Management System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Patients</h2>
+    <a href="{{ url_for('patient_new') }}" class="btn btn-primary">Add New Patient</a>
+</div>
+
+<div class="alert alert-light border" role="alert">
+    <strong>Instructions for Evaluators:</strong> This page displays all registered patients. You can view patient details, 
+    add diagnostic records, export PDF reports, or add new patients using the "Add New Patient" button above.
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Date of Birth</th>
+                    <th>Gender</th>
+                    <th>Contact</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for patient in patients %}
+                <tr>
+                    <td>{{ patient['id'] }}</td>
+                    <td>{{ patient['first_name'] }} {{ patient['last_name'] }}</td>
+                    <td>{{ patient['dob'] or '-' }}</td>
+                    <td>{{ patient['gender'] or '-' }}</td>
+                    <td>{{ patient['contact'] or '-' }}</td>
+                    <td>
+                        <a href="{{ url_for('patient_view', id=patient['id']) }}" class="btn btn-sm btn-info">View</a>
+                        <a href="{{ url_for('patient_edit', id=patient['id']) }}" class="btn btn-sm btn-warning">Edit</a>
+                        <a href="{{ url_for('diagnostics', patient_id=patient['id']) }}" class="btn btn-sm btn-secondary">Diagnostics</a>
+                        <a href="{{ url_for('export_patient', id=patient['id']) }}" class="btn btn-sm btn-success">Export PDF</a>
+                        <form method="POST" action="{{ url_for('patient_delete', id=patient['id']) }}" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this patient?');">
+                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="text-center">No patients found. <a href="{{ url_for('patient_new') }}">Add your first patient</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+

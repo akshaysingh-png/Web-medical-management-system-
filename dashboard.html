@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Medical Management System{% endblock %}
+
+{% block content %}
+<div class="alert alert-info" role="alert">
+    <strong>Welcome to Medical Management System!</strong> This is a demonstration system for managing patients, appointments, and diagnostic records. 
+    Sample data has been pre-loaded for evaluation purposes.
+</div>
+
+<h2 class="mb-4">Dashboard</h2>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <h5 class="card-title">Total Patients</h5>
+                <h2 class="card-text">{{ total_patients }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <h5 class="card-title">Total Appointments</h5>
+                <h2 class="card-text">{{ total_appointments }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-info">
+            <div class="card-body">
+                <h5 class="card-title">Total Diagnostics</h5>
+                <h2 class="card-text">{{ total_diagnostics }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Appointments by Status</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="statusChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Patients by Gender</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="genderChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+    // Appointments by Status Chart
+    const statusCtx = document.getElementById('statusChart').getContext('2d');
+    const statusLabels = [{% for item in appointments_by_status %}'{{ item['status'] }}'{% if not loop.last %},{% endif %}{% endfor %}];
+    const statusCounts = [{% for item in appointments_by_status %}{{ item['count'] }}{% if not loop.last %},{% endif %}{% endfor %}];
+    
+    if (statusLabels.length > 0) {
+        new Chart(statusCtx, {
+            type: 'bar',
+            data: {
+                labels: statusLabels,
+                datasets: [{
+                    label: 'Appointments',
+                    data: statusCounts,
+                    backgroundColor: ['#3498db', '#2ecc71', '#e74c3c', '#f39c12']
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    } else {
+        statusCtx.fillText('No appointment data', 10, 50);
+    }
+
+    // Patients by Gender Chart
+    const genderCtx = document.getElementById('genderChart').getContext('2d');
+    const genderLabels = [{% for item in patients_by_gender %}'{{ item['gender'] }}'{% if not loop.last %},{% endif %}{% endfor %}];
+    const genderCounts = [{% for item in patients_by_gender %}{{ item['count'] }}{% if not loop.last %},{% endif %}{% endfor %}];
+    
+    if (genderLabels.length > 0) {
+        new Chart(genderCtx, {
+            type: 'pie',
+            data: {
+                labels: genderLabels,
+                datasets: [{
+                    label: 'Patients',
+                    data: genderCounts,
+                    backgroundColor: ['#9b59b6', '#1abc9c', '#e67e22']
+                }]
+            },
+            options: {
+                responsive: true
+            }
+        });
+    } else {
+        genderCtx.fillText('No patient data', 10, 50);
+    }
+</script>
+{% endblock %}
+

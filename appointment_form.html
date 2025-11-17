@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}{{ 'Edit Appointment' if appointment else 'Schedule Appointment' }} - Medical Management System{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">{{ 'Edit Appointment' if appointment else 'Schedule New Appointment' }}</h2>
+
+<div class="card">
+    <div class="card-body">
+        <form method="POST">
+            <div class="mb-3">
+                <label for="patient_id" class="form-label">Patient *</label>
+                <select class="form-select" id="patient_id" name="patient_id" required>
+                    <option value="">Select a patient...</option>
+                    {% for patient in patients %}
+                    <option value="{{ patient['id'] }}" {% if (appointment and appointment['patient_id'] == patient['id']) or (request.args.get('patient_id') == patient['id']|string) %}selected{% endif %}>
+                        {{ patient['first_name'] }} {{ patient['last_name'] }} (ID: {{ patient['id'] }})
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="appt_datetime" class="form-label">Date & Time *</label>
+                <input type="datetime-local" class="form-control" id="appt_datetime" name="appt_datetime" value="{{ appointment['appt_datetime'].replace(' ', 'T')[:16] if appointment and appointment['appt_datetime'] else '' }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="reason" class="form-label">Reason</label>
+                <textarea class="form-control" id="reason" name="reason" rows="3" placeholder="Appointment reason or notes">{{ appointment['reason'] if appointment and appointment['reason'] else '' }}</textarea>
+            </div>
+            <div class="mb-3">
+                <label for="status" class="form-label">Status</label>
+                <select class="form-select" id="status" name="status">
+                    <option value="scheduled" {% if not appointment or appointment['status'] == 'scheduled' %}selected{% endif %}>Scheduled</option>
+                    <option value="completed" {% if appointment and appointment['status'] == 'completed' %}selected{% endif %}>Completed</option>
+                    <option value="cancelled" {% if appointment and appointment['status'] == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">{{ 'Update Appointment' if appointment else 'Schedule Appointment' }}</button>
+            <a href="{{ url_for('appointment_list') }}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+
